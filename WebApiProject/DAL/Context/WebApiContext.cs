@@ -14,5 +14,6 @@ namespace WebApiProject.DAL.Context
             optionsBuilder.UseSqlServer("server=(localdb)\\mssqllocaldb; database=WebApiDB; integrated security=true");
         }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
     }
 }
