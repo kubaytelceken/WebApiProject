@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WebApiProject.Services;
 
 namespace WebApiProject
 {
@@ -24,6 +25,19 @@ namespace WebApiProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddScoped<IUserService, UserManager>();
+            services.AddCors(cors =>
+            {
+                cors.AddPolicy("ktPolicy", policy =>
+                 {
+                     //allowanyorigin = her türlü isteði kabul et
+                     //allowanyheader = tüm bþalýklarý kabul et
+                     //allowanymethod = tüm metodlarý kabul et
+                     policy.WithOrigins("https://kubaytelceken.com").AllowAnyHeader().AllowAnyMethod();
+
+                 });
+            });
             services.AddControllers().AddNewtonsoftJson(opt=>
             {
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -39,9 +53,9 @@ namespace WebApiProject
             }
 
             app.UseRouting();
-
+            app.UseStaticFiles();
             app.UseAuthorization();
-
+            app.UseCors("ktPolicy");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiProject.DAL.Context;
 using WebApiProject.DAL.Entities;
+using WebApiProject.Services;
 
 namespace WebApiProject.Controllers
 {
+    [EnableCors]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -99,5 +103,23 @@ namespace WebApiProject.Controllers
             }
         }
 
+
+        [HttpGet("[action]")]
+        public IActionResult Test([FromServices]IUserService userService)
+        {
+            var gelen = userService.GetName("kubay");
+            return Ok();
+        }
+
+        //api/categories/upload
+        [HttpPost("upload")]
+        public async Task<IActionResult> Upload([FromForm]IFormFile file)
+        {
+            var newFileName = Guid.NewGuid()+Path.GetExtension(file.FileName);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Documents/" + newFileName);
+            var stream = new FileStream(path,FileMode.Create);
+            await file.CopyToAsync(stream);
+            return Created("", file);
+        }
     }
 }
